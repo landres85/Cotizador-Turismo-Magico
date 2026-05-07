@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cotizador de Viajes</title>
+
+  <!-- Referencia al manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Ícono de la pestaña del navegador -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+  <!-- Color de la barra en móviles -->
+  <meta name="theme-color" content="#2196f3">
+
+  <style>
+    body { 
+      font-family: Arial; 
+      margin: 20px; 
+      max-width: 400px;   /* ancho limitado */
+      margin: auto;       /* centrado */
+      text-align: center; /* centrar contenido */
+    }
+    input, select, button { 
+      width: 250px;       /* más compacto */
+      padding: 6px; 
+      margin: 4px 0; 
+    }
+    .resultado { 
+      font-weight: bold; 
+      margin-top: 8px; 
+    }
+    img { 
+      width: 150px; 
+      margin-bottom: 15px; 
+    }
+  </style>
+</head>
+<body>
+  <!-- Logo -->
+  <img src="logo_turismo.jpg" alt="Logo Turismo">
+
+  <h2>Cotizador de Viajes</h2>
+
+  <!-- Campos de entrada -->
+  <label>Tipo de viaje:</label><br>
+  <select id="tipoViaje">
+    <option value="NACIONAL">NACIONAL</option>
+    <option value="INTERNACIONAL">INTERNACIONAL</option>
+  </select><br>
+
+  <label>Pasajeros:</label><br>
+  <input id="pasajeros" type="number"><br>
+
+  <label>Vuelos:</label><br>
+  <input id="vuelos" type="text" onblur="aplicarFormato('vuelos')"><br>
+
+  <label>Alojamiento:</label><br>
+  <input id="alojamiento" type="text" onblur="aplicarFormato('alojamiento')"><br>
+
+  <label>Traslados y Tours:</label><br>
+  <input id="traslados" type="text" onblur="aplicarFormato('traslados')"><br>
+
+  <label>Asistencia:</label><br>
+  <input id="asistencia" type="text" onblur="aplicarFormato('asistencia')"><br>
+
+  <label>Número de Infantes:</label><br>
+  <input id="numInfantes" type="number"><br>
+
+  <label>Valor por Infante:</label><br>
+  <input id="valorInfante" type="text" onblur="aplicarFormato('valorInfante')"><br>
+
+  <!-- Botones -->
+  <button onclick="calcular()">Calcular</button>
+  <button onclick="limpiar()">Limpiar</button>
+
+  <!-- Resultados -->
+  <div class="resultado" id="resPersona"></div>
+  <div class="resultado" id="resTotal"></div>
+  <div class="resultado" id="resTarjeta"></div>
+
+<script>
+  function limpiarNumero(valor) {
+    // Elimina $ y puntos usados como separador de miles
+    return parseInt(valor.replace(/\$|\./g, "")) || 0;
+  }
+
+  function formatoMoneda(valor) {
+    return valor.toLocaleString("es-CO", { 
+      style: "currency", 
+      currency: "COP", 
+      minimumFractionDigits: 0, 
+      maximumFractionDigits: 0 
+    });
+  }
+
+  function aplicarFormato(idCampo) {
+    let campo = document.getElementById(idCampo);
+    let valor = limpiarNumero(campo.value);
+    if (valor > 0) {
+      campo.value = formatoMoneda(valor);
+    } else {
+      campo.value = "";
+    }
+  }
+
+  function calcular() {
+    let pasajeros = parseInt(document.getElementById("pasajeros").value) || 0;
+    let vuelos = limpiarNumero(document.getElementById("vuelos").value);
+    let alojamiento = limpiarNumero(document.getElementById("alojamiento").value);
+    let traslados = limpiarNumero(document.getElementById("traslados").value);
+    let asistencia = limpiarNumero(document.getElementById("asistencia").value);
+    let numInfantes = parseInt(document.getElementById("numInfantes").value) || 0;
+    let valorInfante = limpiarNumero(document.getElementById("valorInfante").value);
+
+    // Calcular valores
+    let valorXpersona = (vuelos + alojamiento + traslados + asistencia) * 1.26;
+    let valorInfantesTotal = valorInfante * numInfantes;
+    let valorTotal = (valorXpersona * pasajeros) + valorInfantesTotal;
+    let valorTarjeta = valorTotal * 1.06;
+
+    // Mostrar resultados con formato monetario
+    document.getElementById("resPersona").innerText = "Valor por persona: " + formatoMoneda(valorXpersona);
+    document.getElementById("resTotal").innerText = "Valor total: " + formatoMoneda(valorTotal);
+    document.getElementById("resTarjeta").innerText = "Pago con tarjeta: " + formatoMoneda(valorTarjeta);
+  }
+
+  function limpiar() {
+    document.getElementById("tipoViaje").value = "NACIONAL";
+    document.getElementById("pasajeros").value = "";
+    document.getElementById("vuelos").value = "";
+    document.getElementById("alojamiento").value = "";
+    document.getElementById("traslados").value = "";
+    document.getElementById("asistencia").value = "";
+    document.getElementById("numInfantes").value = "";
+    document.getElementById("valorInfante").value = "";
+    document.getElementById("resPersona").innerText = "";
+    document.getElementById("resTotal").innerText = "";
+    document.getElementById("resTarjeta").innerText = "";
+  }
+
+  // Registro del Service Worker
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js")
+      .then(() => console.log("Service Worker registrado"))
+      .catch(err => console.error("Error al registrar SW:", err));
+  }
+</script>
+</body>
+</html>
