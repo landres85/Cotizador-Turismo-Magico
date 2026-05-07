@@ -28,11 +28,13 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   event.respondWith(
     fetch(event.request)
-      .then(response => response) // devuelve la respuesta de red si existe
+      .then(response => {
+        // Si la respuesta es válida, la devuelve
+        return response;
+      })
       .catch(() => {
-        // fallback garantizado
+        // Si falla, devuelve index.html como fallback
         return caches.match("/Cotizador-Turismo-Magico/index.html");
       })
   );
 });
- 
