@@ -34,6 +34,16 @@
       width: 150px; 
       margin-bottom: 15px; 
     }
+    #planPagos {
+      margin-top: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    #valorCuota {
+      color: green;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -78,6 +88,15 @@
   <div class="resultado" id="resPersona"></div>
   <div class="resultado" id="resTotal"></div>
   <div class="resultado" id="resTarjeta"></div>
+
+  <!-- Plan de pagos -->
+  <button onclick="mostrarPlanPagos()">Plan de pagos</button>
+  <div id="planPagos">
+    <div id="cuotaInicial"></div>
+    <label>Número de cuotas:</label><br>
+    <input id="numCuotas" type="number" oninput="calcularCuotas()"><br>
+    <div id="valorCuota"></div>
+  </div>
 
 <script>
   function limpiarNumero(valor) {
@@ -137,6 +156,36 @@
     document.getElementById("resPersona").innerText = "";
     document.getElementById("resTotal").innerText = "";
     document.getElementById("resTarjeta").innerText = "";
+    document.getElementById("cuotaInicial").innerText = "";
+    document.getElementById("valorCuota").innerText = "";
+    document.getElementById("numCuotas").value = "";
+  }
+
+  function mostrarPlanPagos() {
+    let valorTotalTexto = document.getElementById("resTotal").innerText;
+    if (!valorTotalTexto) {
+      alert("Primero calcula el viaje.");
+      return;
+    }
+    let valorTotal = limpiarNumero(valorTotalTexto);
+    let cuotaInicial = valorTotal * 0.30;
+    document.getElementById("cuotaInicial").innerText = "Cuota inicial (30%): " + formatoMoneda(cuotaInicial);
+    document.getElementById("valorCuota").innerText = "";
+    document.getElementById("numCuotas").value = "";
+  }
+
+  function calcularCuotas() {
+    let valorTotalTexto = document.getElementById("resTotal").innerText;
+    let valorTotal = limpiarNumero(valorTotalTexto);
+    let cuotaInicial = valorTotal * 0.30;
+    let saldo = valorTotal - cuotaInicial;
+    let numCuotas = parseInt(document.getElementById("numCuotas").value) || 0;
+    if (numCuotas > 0) {
+      let valorPorCuota = saldo / numCuotas;
+      document.getElementById("valorCuota").innerText = "Valor por cuota (" + numCuotas + "): " + formatoMoneda(valorPorCuota);
+    } else {
+      document.getElementById("valorCuota").innerText = "";
+    }
   }
 
   // Registro del Service Worker
