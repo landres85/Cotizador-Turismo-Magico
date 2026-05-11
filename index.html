@@ -100,13 +100,8 @@
 
 <script>
   function limpiarNumero(valor) {
-    // Elimina $, puntos, comas y espacios
-    return parseInt(
-      valor.replace(/\$/g, "")
-           .replace(/\./g, "")
-           .replace(/,/g, "")
-           .replace(/\s/g, "")
-    ) || 0;
+    // Elimina todo lo que no sea dígito
+    return parseInt(valor.replace(/\D/g, "")) || 0;
   }
 
   function formatoMoneda(valor) {
